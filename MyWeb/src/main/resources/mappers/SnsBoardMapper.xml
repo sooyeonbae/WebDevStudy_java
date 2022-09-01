@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+  <mapper namespace="com.spring.myweb.snsboard.mapper.ISnsBoardMapper">
+  
+  <insert id="insert">
+  	INSERT INTO snsboard
+  	(writer, uploadpath, fileloca, filename, filerealname, content)
+  	VALUES
+  	(#{writer}, #{uploadpath}, #{fileloca}, #{filename}, #{filerealname}, #{content})
+  </insert>
+  
+  
+  <!-- 글전체목록 -->
+  <select id = "getList" resultType="sns">
+  	SELECT * FROM
+	(SELECT * FROM snsboard
+	ORDER BY bno DESC) tbl
+	LIMIT #{cpp}
+	OFFSET 0
+  </select>
+  
+  <!-- 상세보기 -->
+  <select id="getDetail" resultType="sns">
+  	SELECT * FROM snsboard
+  	WHERE bno = #{bno}
+  </select>
+  
+  <!-- 삭제 -->
+  <delete id="delete">
+  	DELETE FROM snsboard
+  	WHERE bno = #{bno}
+  </delete>
+  
+  
+  <!-- 좋아요 검색 -->
+  <select id="searchLike" resultType="int">
+  	SELECT COUNT(*) FROM snslike
+  	WHERE bno = #{bno} AND userId=#{userId}
+  </select>
+  
+  <!-- 좋아요 등록 -->
+  <insert id="createLike">
+  	INSERT INTO snslike
+  	(bno, userId)
+  	VALUES (#{bno}, #{userId})
+  </insert>
+  
+  <!-- 좋아요 취소 -->
+  <delete id="deleteLike">
+  	DELETE FROM snslike
+  	WHERE bno = #{bno} AND userId = #{userId}
+  </delete>
+  
+  <!-- 게시물당 좋아요개수 확인 -->
+  <select id="likeCnt" resultType="int">
+  	SELECT COUNT(*)
+  	FROM snslike
+  	WHERE bno=#{bno}
+  </select>
+  
+  <!-- 리스트 진입시 좋아요 체크 - 사용자별 좋아요 한 게시물들 -->
+  <select id="likeList" resultType="int">
+  	SELECT bno FROM snslike
+  	WHERE userId = #{userId}
+  </select>
+  
+  
+  
+  </mapper>

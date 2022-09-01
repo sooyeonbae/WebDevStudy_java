@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans xmlns="http://www.springframework.org/schema/mvc"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:beans="http://www.springframework.org/schema/beans"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xsi:schemaLocation="http://www.springframework.org/schema/mvc https://www.springframework.org/schema/mvc/spring-mvc.xsd
+		http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context https://www.springframework.org/schema/context/spring-context.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.3.xsd">
+
+	<!-- 자동트로 컨트롤러와 매핑메서드 탐색 (핸들러매핑, 핸들러어댑터 빈 등록) -->
+	<annotation-driven />
+
+
+	<!-- css, img, js . . . 의 파일경로가 복잡할 때 많이 사용합니다. -->
+	<!-- jsp 파일 같은데서 경로 긴거 일일이 쓰기 귀찮으니까... 선언해두는것 -->
+	<!-- 내부 경로를 숨겨주는 역할도 한다. -->
+	<resources mapping="/resources/**" location="/resources/" />
+	<resources mapping="/img/**" location="/resources/img/" />
+	<resources mapping="/css/**" location="/resources/css/" />
+	<resources mapping="/fonts/**" location="/resources/fonts/" />
+	<resources mapping="/js/**" location="/resources/js/" />
+
+
+	<!-- 뷰 리졸버 : 컨트롤러가 리턴한 문자열 앞, 뒤에 적절한 경로를 붙여서 화면을 응답할 수 있도록 도와준다. -->
+	<beans:bean
+		class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<beans:property name="prefix" value="/WEB-INF/views/" />
+		<beans:property name="suffix" value=".jsp" />
+	</beans:bean>
+
+
+
+	<!-- 아노테이션으로 등록된 클래스 객체들을 탐색해주는 설정 태그. base-package에다가 탐색할 패키지 경로를 쓰시면 하위패키지까지 
+		몽땅 검색해줍니다. 탑레벨만 작성해두면 된다. -->
+	<context:component-scan
+		base-package="com.spring.myweb" />
+
+
+	<!-- 파일 업로드 -->
+	<!-- 반드시 id를 multipartResolver로 선언해야한다. 
+		Multipart 형식으로 전달되는 데이터를 스프링 mvc에서 사용할 수 있도록 변환해주는 객체 -->
+	<beans:bean id="multipartResolver"
+		class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+		
+		<!-- 최대 업로드 가능한 바이트 크기 제한하는것 (바이트 단위), -1은 제한이 없음을 의미.  -->
+		<beans:property name="maxUploadSize" value="10485760"/>  <!-- 10MB (1024 * 1024 * 10) -->
+		
+		<!-- 업로드 요청을 변환할 때 사용할 문자 인코딩방식 -->
+		<beans:property name="defaultEncoding" value="UTF-8"></beans:property>
+		
+	</beans:bean>
+	
+	
+	<!--
+		공통로그들, 예외처리 내용들을 기존 클래스와 분리해서 객체 지향적으로 사용하기 위해
+		Aspect(적용하고싶은 공통로직들)와 Target(Service 클래스들, 메서드들)을 연결할 수 있도록
+		가상환경을 구축해주는 빈. 
+	 -->
+	<aop:aspectj-autoproxy  />
+	
+	
+	
+</beans:beans>

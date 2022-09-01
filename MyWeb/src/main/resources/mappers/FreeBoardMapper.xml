@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+  
+  
+  <mapper namespace="com.spring.myweb.freeboard.mapper.IFreeBoardMapper">
+  
+  	<sql id="search"> <!-- 난 mySQL이니까 ||으로 연결한거 concat으로 고쳐야할듯-->
+  		<if test="condition == 'title' ">
+  			WHERE title LIKE '%' || #{keyword} || '%'
+  		</if>
+  		
+  		<if test="condition == 'content' ">
+  			WHERE content LIKE '%' || #{keyword} || '%'
+  		</if>
+  			
+  		<if test="condition == 'writer' ">
+  			WHERE writer LIKE '%' || #{keyword} || '%'
+  		</if>
+  		
+  		<if test="condition == 'titleContent' ">
+  			WHERE title LIKE '%' || #{keyword} || '%'
+  			OR content LIKE '%' || #{keyword} || '%'
+  		</if>
+  	</sql>
+  	
+  	<!-- resultMap 안할거다. 언더바 없고 그냥 대소문자만 차이있기때문에-->
+  	
+  
+  
+  
+  
+  	<insert id="regist">
+  		INSERT INTO freeboard (title, writer, content)
+  		VALUES (#{title}, #{writer}, #{content})
+  	</insert>
+  
+  	<!-- 게시물 총개수 검색조건은 동적SQL문으로 처리 -->
+  	<select id="getTotal" resultType="int">
+  		SELECT COUNT(*) FROM freeboard
+  		<include refid="search" />
+  	</select>
+  	
+  	<!-- resultMap 안할거다. 언더바 없고 그냥 대소문자만 차이있기때문에
+  	이건 오라클버전이니까 mySQL버전으로 다시 필요.-->
+  	<!-- <select id="getList" resultType="com.spring.myweb.command.FreeBoardVO">
+  		SELECT * FROM
+	  		(
+	  		SELECT ROWNUM AS rn, tbl.* FROM
+	  			(
+	  			SELECT * FROM freeboard
+	  			<include refid="search" />
+	  			ORDER BY bno DESC
+	  			) tbl
+	  		)
+	  	<![CDATA[
+  		WHERE rn > (#{pageNum} -1 ) * #{cpp}
+  		AND rn <= #{pageNum} * #{cpp}
+  		]]>
+  	</select> -->
+  	<select id="getList" resultType="board">
+  			SELECT * FROM
+				(SELECT * FROM freeboard 
+				<include refid="search" />
+				ORDER BY bno DESC) tbl
+			LIMIT #{cpp}
+			OFFSET #{offset} <!-- 메모 )sql에 * 있으면 아예 안먹힌다(정수끼리해도). 저거 곱한값을 따로 변수 만들어서 쓰자. -->
+			
+  	</select>
+  	
+  	
+  	<!-- 상세보기 -->
+  	<select id="getContent" resultType="board">
+  		SELECT * FROM freeboard
+  		WHERE bno = #{bno}
+  	</select>
+  	
+  	<update id="update" >
+		UPDATE freeboard SET
+		title = #{title}, content = #{content},
+		updatedate = CURRENT_TIMESTAMP 	<!-- 오라클은 sysdate였지만 -->
+		WHERE bno = #{bno}
+  	</update>
+  	
+  	<delete id="delete">
+  		DELETE FROM freeboard
+  		WHERE bno = #{bno}
+  	</delete>
+  
+  
+  
+  
+  </mapper>

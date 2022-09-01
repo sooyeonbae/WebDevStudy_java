@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.spring.myweb.user.mapper.IUserMapper">
+
+	<!-- VO클래스의 멤버변수가 collection 타입(or 일반객체)일 경우에는 
+	collection 태그를 이용합니다. collection 타입의 
+		변수에 값을 매길 때는 어떤 객체로 포장해서 넣을지를 새로운 resultMap으로 선언해주셔야 합니다.(밑에 list) -->
+	<resultMap type="user" id="mypageInfo">
+		<id property="userId" column="USERID" />
+		<result property="userName" column="USERNAME" />
+		<result property="userPhone1" column="USERPHONE1" />
+		<result property="userPhone2" column="USERPHONE2" />
+		<result property="userEmail1" column="USEREMAIL1" />
+		<result property="userEmail2" column="USEREMAIL2" />
+		<result property="addrBasic" column="ADDRBASIC" />
+		<result property="addrDetail" column="ADDRDETAIL" />
+		<result property="addrZipNum" column="ADDRZIPNUM" />
+		<collection property="userBoardList" resultMap="list" />
+	</resultMap>
+
+	<!-- collection에 들어갈 객체가 어떤 식으로 포장될지를 명시해주는 resultMap -->
+	<resultMap type="board" id="list">
+		<id property="bno" column="bno" />
+		<result property="title" column="title" />
+		<result property="regDate" column="regdate" />
+	</resultMap>
+
+
+
+
+	<select id="idCheck" resultType="int">
+		SELECT COUNT(*) FROM users
+		WHERE userId = #{id}
+	</select>
+
+	<insert id="join">
+		INSERT INTO users (userId, userPw, userName, userPhone1, userPhone2,
+		userEmail1, userEmail2, addrBasic, addrDetail, addrZipNum)
+		VALUES ( #{userId}, #{userPw}, #{userName}, #{userPhone1}, #{userPhone2},
+		#{userEmail1}, #{userEmail2}, #{addrBasic}, #{addrDetail},
+		#{addrZipNum} )
+	</insert>
+
+	<select id="login" resultType="user">
+		SELECT * FROM users
+		WHERE userId = #{id}
+		AND userPw = #{pw}
+	</select>
+
+
+
+	<!-- Join해서 freeboard에 있는 작성글까지 가져오기 resultMap이 필요하다. (freeBoard거 가져오는 column은 
+		user에 없으니까) -->
+
+	<!-- LEFT OUTER 조인 하는 이유 : inner join(교집합)하면 글 안쓴 회원은 회원정보도 안와서. -->
+	<select id="getInfo" resultMap="mypageInfo">
+		SELECT userId, userName, userPhone1, userPhone2, userEmail1, userEmail2,
+		addrBasic, addrDetail, addrZipNum,
+		b.bno, b.title, b.regdate
+		FROM users u
+		LEFT OUTER JOIN freeboard b
+		ON (u.userId = b.writer)
+		WHERE u.userId = #{id}
+		ORDER BY b.bno DESC
+	</select>
+
+
+	<update id="updateUser">
+		UPDATE users SET
+			userPw = #{userPw},
+			userName = #{userName},
+			userPhone1 = #{userPhone1},
+			userPhone2 = #{userPhone2},
+			userEmail1 = #{userEmail1},
+			userEmail2 = #{userEmail2},
+			addrZipNum = #{addrZipNum},
+			addrBasic = #{addrBasic},
+			addrDetail = #{addrDetail}
+		WHERE userId = #{userId}
+	</update>
+
+
+
+
+
+
+
+
+
+
+
+</mapper>

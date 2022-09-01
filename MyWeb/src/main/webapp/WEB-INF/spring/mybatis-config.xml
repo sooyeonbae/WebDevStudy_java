@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration
+  PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-config.dtd">
+  
+  <!-- mybatis 관련 설정 해 둘 곳
+mybatis는 null 전달을 오류로 인식하는데 그거 처리하기 
+참고) mybatis 공식문서 : https://mybatis.org/mybatis-3/ko/configuration.html
+-->
+  
+  <configuration>
+  
+  	<settings>
+  		<!-- MyBatis에서 쿼리에 매핑되는 파라미터에 Null이 들어가면 에러가 발생합니다.
+  		 -> 전달할 값이 Null이면 어떤값으로 처리할건지 지정
+  		 그 값으로 데이터베이스에 값이 세팅된다. -->
+  	
+  		<!-- 방법 1 : 빈문자열로 설정-->
+  		<!-- <setting name="jdbcTypeForNull" value="VARCHAR"/> -->
+  		<!-- 방법 2 : Null로 설정 -->
+  		<setting name="jdbcTypeForNull" value="NULL"/>
+  		
+  		<!-- 데이터베이스로부터의 응답을 몇초까지 기다리게할지 설정 (3000초) -->
+  		<setting name="defaultStatementTimeout" value="3000"/>
+  	</settings>
+  	
+  	<typeAliases>
+  	<!-- 타입에 VO패키지경로 안쓰고 그냥 별칭 쓸 수 있게 하기 (root-context.xml에 경로 적어두기)-->
+  		<typeAlias type="com.spring.myweb.command.UserVO" alias="User"/>
+  		<typeAlias type="com.spring.myweb.command.ReplyVO" alias="reply"/>
+  		<typeAlias type="com.spring.myweb.command.FreeBoardVO" alias="board"/>
+  		<typeAlias type="com.spring.myweb.command.SnsBoardVO" alias="sns"/>
+  	</typeAliases>
+  	
+  	<!-- 인터페이스 mapper구현체 xml파일의 경로를 여기에 설정 해둘수있다. 
+  	근데 우리는 SqlSessionFactoryBean에 해놔서 필요없음
+  	<mappers>
+  		<mapper resource="classpath:/mappers/*.xml"/>
+  	</mappers> -->
+  
+  </configuration>

@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd">
+
+	<!-- 노출 막기 위해 email.properties에서 값 가져오기 -->
+	<context:property-placeholder
+		location="classpath:/db-config/email.properties" />
+
+	<!-- 이메일 인증 관련 빈 등록 -->
+	<bean id="mailSender"
+		class="org.springframework.mail.javamail.JavaMailSenderImpl">
+		<property name="host" value="smtp.gmail.com" /> <!-- 네이버 : smtp.naver.com -->
+		<property name="port" value="587" />	<!-- 네이버 : 465 또는 587 -->
+		<property name="username" value="${email.account}" />	<!-- 계정명 -->
+		<property name="password" value="${email.password}" />	<!-- 비밀번호 -->
+
+		<property name="javaMailProperties">
+			<!-- gmail버전 -->
+			<props>
+				<prop key="mail.transport.protocol">smtp</prop>
+				<prop key="mail.smtp.auth">true</prop>
+				<prop key="mail.smtp.starttls.enable">true</prop>
+				<prop key="mail.debug">true</prop>
+				<!-- <prop key="mail.smtp.ssl.trust">smtp.gmail.com</prop> -->
+				<prop key="mail.smtp.ssl.trust">*</prop>
+				<prop key="mail.smtp.ssl.protocols">TLSv1.2</prop>
+			</props>
+
+				<!-- 네이버 버전 -->
+				<!-- <props> 
+						<prop key="mail.smtp.auth">true</prop> \
+						<prop key="mail.smtp.starttls.enable">true</prop> 
+						<prop key="mail.smtps.checkserveridentity">true</prop> 
+						<prop key="mail.smtps.ssl.trust">*</prop> 
+						<prop key="mail.debug">true</prop> 
+						<prop key="mail.smtp.socketFactory.class">javax.net.ssl.SSLSocketFactory</prop> 
+					</props> -->
+
+				<!-- 네이버 버전 -->
+				<!-- <props>
+            <prop key="mail.smtp.starttls.enable">true</prop>
+            <prop key="mail.smtp.auth">true </prop>
+            <prop key="mail.transport.protocol">smtp</prop>
+            <prop key="mail.debug">true</prop>
+            <prop key="mail.smtps.ssl.trust">*</prop>
+            <prop key="mail.smtp.ssl.protocols">TLSv1.2</prop>
+         </props> -->
+		</property>
+	</bean>
+
+
+</beans>
